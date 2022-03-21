@@ -32,7 +32,7 @@ fun calcComm(cardNum: String = "5", sumLast: Int = 0, sumCur: Int): Int {
             if (sumLast >= 75_000) ((0.006 * sumCur + 20) * 100).roundToInt() else 0
         }
         cardNum.toInt() == 3 || cardNum.toInt() == 4 -> {
-            val minFeeVisaMir: Int = 35_00
+            val minFeeVisaMir = 35_00
             if (sumCur*0.75 < minFeeVisaMir) minFeeVisaMir else (sumCur*0.75).roundToInt()
         }
         cardNum.toInt() == 5  -> {
