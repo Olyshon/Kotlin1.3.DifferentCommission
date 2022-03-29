@@ -1,5 +1,14 @@
 import kotlin.math.roundToInt
 
+const val DAY_LIMIT_ALL = 150_000
+const val MONTH_LIMIT_ALL = 600_000
+const val MAX_VKPAY_ONE_TIME = 15_000
+const val MAX_VKPAY_MONTH = 40_000
+const val MAX_MAESTRO_MASTERCARD_MONTH = 75_000
+const val FEE_PERC_MAESTRO_MASTERCARD = 0.006
+const val FEE_PERC_VISA_MIR = 0.75
+
+
 fun main() {
     println("Тип карты:")
     println("1. mastercard")
@@ -16,7 +25,7 @@ fun main() {
     val sumCurIn: String = readLine() ?: return
     val sumCur: Int = sumCurIn.toInt()
 
-    if (sumCur >= 150_000 || sumLast >= 600_000) println("Достигнут лимит перевода по карте")
+    if (sumCur >= DAY_LIMIT_ALL || sumLast >= MONTH_LIMIT_ALL) println("Достигнут лимит перевода по карте")
     else {
         when (val resultFee: Int = calcComm(cardNum, sumLast, sumCur)) {
             -1 -> println("Достигнут лимит по переводам VK Pay")
@@ -29,14 +38,15 @@ fun main() {
 fun calcComm(cardNum: String = "5", sumLast: Int = 0, sumCur: Int): Int {
     return when {
         cardNum.toInt() == 1 || cardNum.toInt() == 2 -> {
-            if (sumLast >= 75_000) ((0.006 * sumCur + 20) * 100).roundToInt() else 0
+            val minFeeMaesMC = 20
+            if (sumLast >= MAX_MAESTRO_MASTERCARD_MONTH) ((FEE_PERC_MAESTRO_MASTERCARD * sumCur + minFeeMaesMC) * 100).roundToInt() else 0
         }
         cardNum.toInt() == 3 || cardNum.toInt() == 4 -> {
             val minFeeVisaMir = 35_00
-            if (sumCur*0.75 < minFeeVisaMir) minFeeVisaMir else (sumCur*0.75).roundToInt()
+            if (sumCur*FEE_PERC_VISA_MIR < minFeeVisaMir) minFeeVisaMir else (sumCur*FEE_PERC_VISA_MIR).roundToInt()
         }
         cardNum.toInt() == 5  -> {
-            if (sumCur < 15_000 && sumLast < 40_000) 0 else -1
+            if (sumCur < MAX_VKPAY_ONE_TIME && sumLast < MAX_VKPAY_MONTH) 0 else -1
         }
         else -> -2
     }
